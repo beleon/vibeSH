@@ -1,0 +1,40 @@
+# vibeSH NDJSON event grammar (llama.cpp GBNF).
+#
+# Constrains a local model's output to exactly the wire protocol: a stream of
+# event objects, one per line, ending in exactly one terminal event
+# (prompt | yield | exit). This makes it impossible for the model to leak prose,
+# emit malformed JSON, or use the wrong field names — the failure modes weaker
+# local models hit. Enable with `--grammar` (llama.cpp llama-server only).
+#
+# NOT compatible with harmony-format models (gpt-oss): the grammar constrains the
+# channel-control tokens those models must emit, so llama-server 500s. Use a
+# non-harmony model (Qwen/Gemma/Llama) for grammar.
+#
+# Key order and spacing are fixed so output is canonical and cheap to parse.
+
+root      ::= (nonterm "\n")* term "\n"?
+
+nonterm   ::= chunk | ooc
+term      ::= prompt | yield | exit
+
+chunk     ::= "{\"type\": \"chunk\", \"text\": " string ckopt "}"
+ckopt     ::= (", \"delay\": " uint)? (", \"cps\": " uint)?
+
+ooc       ::= "{\"type\": \"ooc\", \"text\": " string "}"
+
+prompt    ::= "{\"type\": \"prompt\", \"text\": " string pmopt "}"
+pmopt     ::= (", \"echo\": " bool)? (", \"mode\": " mode)?
+
+yield     ::= "{\"type\": \"yield\"}"
+
+exit      ::= "{\"type\": \"exit\"" (", \"code\": " uint)? "}"
+
+mode      ::= "\"line\"" | "\"keys\""
+bool      ::= "true" | "false"
+uint      ::= [0-9]+
+
+# JSON string: no unescaped control chars (our parser is strict), ESC arrives as
+# a \uXXXX escape and is matched by the \uXXXX branch.
+string    ::= "\"" char* "\""
+char      ::= [^"\\\x7F\x00-\x1F] | "\\" (["\\bfnrt/] | "u" hex hex hex hex)
+hex       ::= [0-9a-fA-F]

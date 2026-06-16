@@ -1,0 +1,13 @@
+[project]
+name = "vibesh"
+version = "0.1.0"
+description = "A hallucinated shell — a REPL in front of an LLM that role-plays a whole Linux machine."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+authors = [{ name = "Leon Becker" }]
+dependencies = [
+    "anthropic>=0.109.1",
+    "claude-agent-sdk>=0.2.97",
+    "openai>=2.41.1",
+]
