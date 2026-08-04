@@ -43,6 +43,9 @@ it is pretending to be a computer.
 I wrote about the idea, the VibeOS inspiration, and why a terminal gives the hallucination
 a body: [I built a shell that hallucinates the entire computer](https://blog.leonbecker.de/i-built-a-shell-that-hallucinates-the-entire-computer/)
 
+Hosted on both [github.com/beleon/vibeSH](https://github.com/beleon/vibeSH) and
+[codefloe.com/beleon/vibeSH](https://codefloe.com/beleon/vibeSH).
+
 ---
 
 ## 🚀 Booting your imaginary computer
